@@ -329,8 +329,11 @@ close () {
     reject_str=$(get_platform_match_str "$platform")
     pos=$(iptables -L FORWARD | grep -c "system")
     ((pos++))
-    iptables -I FORWARD "$pos" -i "$INTERFACE" -p udp --dport 27000:27200 -m string --string "$reject_str" --algo "$ALGO" -j REJECT
-
+    iptables -I FORWARD "$pos" -i "$INTERFACE" -p udp --dport 27000:27200 -m string --string "xboxpwid:" --algo "$ALGO" -j REJECT
+    ((pos++))
+    iptables -I FORWARD "$pos" -i "$INTERFACE" -p udp --dport 27000:27200 -m string --string "steamid:" --algo "$ALGO" -j REJECT
+    ((pos++))
+    iptables -I FORWARD "$pos" -i "$INTERFACE" -p udp --dport 27000:27200 -m string --string "psn-4:" --algo "$ALGO" -j REJECT
   fi
 }
 
