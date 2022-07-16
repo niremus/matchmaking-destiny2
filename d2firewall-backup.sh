@@ -244,10 +244,7 @@ setup () {
   mv /tmp/data.txt data.txt
   chown "$SUDO_USER":"$SUDO_USER" data.txt
 
-  iptables -I FORWARD -i "$INTERFACE" -p udp --dport 27000:27200 -m string --string "xboxpwid:" --algo "$ALGO" -j REJECT
-  iptables -I FORWARD -i "$INTERFACE" -p udp --dport 27000:27200 -m string --string "steamid:" --algo "$ALGO" -j REJECT
-  iptables -I FORWARD -i "$INTERFACE" -p udp --dport 27000:27200 -m string --string "psn-4" --algo "$ALGO" -j REJECT
-
+  iptables -I FORWARD -i "$INTERFACE" -p udp --dport 27000:27200 -m string --string "$reject_str" --algo "$ALGO" -j REJECT
   
   n=${#ids[*]}
   INDEX=1
@@ -316,9 +313,7 @@ open () {
     echo -e "${RED}Matchmaking is no longer being restricted.${NC}"
     platform=$(sed -n '1p' < data.txt)
     reject_str=$(get_platform_match_str "$platform")
-    iptables -D FORWARD -i "$INTERFACE" -p udp --dport 27000:27200 -m string --string "xboxpwid:" --algo "$ALGO" -j REJECT
-    iptables -D FORWARD -i "$INTERFACE" -p udp --dport 27000:27200 -m string --string "steamid:" --algo "$ALGO" -j REJECT
-    iptables -D FORWARD -i "$INTERFACE" -p udp --dport 27000:27200 -m string --string "psn-4" --algo "$ALGO" -j REJECT
+    iptables -D FORWARD -i "$INTERFACE" -p udp --dport 27000:27200 -m string --string "$reject_str" --algo "$ALGO" -j REJECT
   fi
 }
 
@@ -330,7 +325,6 @@ close () {
     pos=$(iptables -L FORWARD | grep -c "system")
     ((pos++))
     iptables -I FORWARD "$pos" -i "$INTERFACE" -p udp --dport 27000:27200 -m string --string "$reject_str" --algo "$ALGO" -j REJECT
-
   fi
 }
 
